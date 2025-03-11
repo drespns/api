@@ -1,0 +1,21 @@
+TiendaID,NombreTienda,Ubicacion,Ciudad,Capacidad,Gerente,CosteOperativoMensual
+1,Tienda 1,Avenida Siempreviva 58,Bilbao,2056,Gerente_1,7404.15
+2,Tienda 2,Paseo Colón 100,Málaga,760,Gerente_2,12620.78
+3,Tienda 3,Calle Luna 96,Madrid,2860,Gerente_3,4071.84
+4,Tienda 4,Calle Real 55,Murcia,1874,Gerente_4,14030.7
+5,Tienda 5,Calle Luna 99,Sevilla,2426,Gerente_5,11185.39
+6,Tienda 6,Calle Mayor 74,Murcia,1596,Gerente_6,3234.97
+7,Tienda 7,Calle Real 3,Madrid,1004,Gerente_7,13153.42
+8,Tienda 8,Avenida Siempreviva 9,Bilbao,1288,Gerente_8,11277.84
+9,Tienda 9,Calle Mayor 89,Málaga,2938,Gerente_9,14195.73
+10,Tienda 10,Calle Real 38,Madrid,2007,Gerente_10,14206.66
+11,Tienda 11,Calle Luna 62,Málaga,2400,Gerente_11,3435.36
+12,Tienda 12,Calle Luna 39,Málaga,2711,Gerente_12,12652.46
+13,Tienda 13,Avenida del Sol 41,Madrid,516,Gerente_13,6565.11
+14,Tienda 14,Avenida del Sol 33,Zaragoza,1518,Gerente_14,14733.99
+15,Tienda 15,Calle de la Paz 32,Málaga,1277,Gerente_15,6958.19
+16,Tienda 16,Paseo Colón 81,Valencia,2150,Gerente_16,13101.6
+17,Tienda 17,Avenida Libertad 93,Zaragoza,1859,Gerente_17,5494.06
+18,Tienda 18,Calle Luna 80,Murcia,814,Gerente_18,13804.51
+19,Tienda 19,Calle Mayor 54,Murcia,725,Gerente_19,3422.12
+20,Tienda 20,Avenida del Sol 53,Sevilla,2416,Gerente_20,14942.22

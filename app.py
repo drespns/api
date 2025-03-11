@@ -1,81 +1,67 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List
-from sqlalchemy import create_engine, Column, Integer, String, Float
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+import csv
+import os
 
-# Configuración de la base de datos SQLite
-DATABASE_URL = "sqlite:///./productos.db"
+app = FastAPI(title="API de Empleados - TecnoMarket")
 
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
+# Modelo Pydantic para la validación y respuesta
+class EmpleadoSchema(BaseModel):
+    EmpleadoID: int
+    Nombre: str
+    Apellido: str
+    Puesto: str
+    FechaContratacion: str
+    TiendaID: int
+    Salario: float
+    HorasFormacion: int
 
-# Modelo SQLAlchemy para la tabla Productos
-class Producto(Base):
-    __tablename__ = "productos"
-    id = Column(Integer, primary_key=True, index=True)
-    nombre = Column(String, index=True)
-    categoria = Column(String, index=True)
-    precio_costo = Column(Float)
-    precio_venta = Column(Float)
-    proveedor = Column(String)
-    fecha_lanzamiento = Column(String)  # Usamos string para simplificar
+# Lista en memoria para almacenar los empleados
+empleados_data: List[EmpleadoSchema] = []
 
-# Crear las tablas (si no existen)
-Base.metadata.create_all(bind=engine)
+# Cargar los datos desde Empleados.csv al iniciar la app
+@app.on_event("startup")
+def load_empleados():
+    csv_path = os.path.join("datos", "Empleados.csv")  # Ajusta la ruta si es distinta
+    if not os.path.exists(csv_path):
+        print(f"Archivo {csv_path} no encontrado. La lista de empleados estará vacía.")
+        return
 
-# Inicialización de la aplicación FastAPI
-app = FastAPI(title="API de Productos - TecnoMarket")
+    with open(csv_path, "r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            empleado = EmpleadoSchema(
+                EmpleadoID=int(row["EmpleadoID"]),
+                Nombre=row["Nombre"],
+                Apellido=row["Apellido"],
+                Puesto=row["Puesto"],
+                FechaContratacion=row["FechaContratacion"],
+                TiendaID=int(row["TiendaID"]),
+                Salario=float(row["Salario"]),
+                HorasFormacion=int(row["HorasFormacion"])
+            )
+            empleados_data.append(empleado)
 
-# Esquema Pydantic para la validación y respuesta
-class ProductoSchema(BaseModel):
-    id: int
-    nombre: str
-    categoria: str
-    precio_costo: float
-    precio_venta: float
-    proveedor: str
-    fecha_lanzamiento: str
+    print(f"Se han cargado {len(empleados_data)} empleados desde {csv_path}.")
 
-    class Config:
-        orm_mode = True
+# Endpoint para obtener la lista de empleados
+@app.get("/empleados/", response_model=List[EmpleadoSchema])
+def get_empleados():
+    return empleados_data
 
-# Endpoint para obtener la lista de productos
-@app.get("/productos/", response_model=List[ProductoSchema])
-def read_productos():
-    db = SessionLocal()
-    productos = db.query(Producto).all()
-    db.close()
-    return productos
+# Endpoint para obtener un empleado por ID
+@app.get("/empleados/{empleado_id}", response_model=EmpleadoSchema)
+def get_empleado(empleado_id: int):
+    for emp in empleados_data:
+        if emp.EmpleadoID == empleado_id:
+            return emp
+    raise HTTPException(status_code=404, detail="Empleado no encontrado")
 
-# Endpoint para obtener un producto por ID
-@app.get("/productos/{producto_id}", response_model=ProductoSchema)
-def read_producto(producto_id: int):
-    db = SessionLocal()
-    producto = db.query(Producto).filter(Producto.id == producto_id).first()
-    db.close()
-    if producto is None:
-        raise HTTPException(status_code=404, detail="Producto no encontrado")
-    return producto
-
-# Endpoint para crear un nuevo producto
-@app.post("/productos/", response_model=ProductoSchema)
-def create_producto(producto: ProductoSchema):
-    db = SessionLocal()
-    db_producto = Producto(
-        id=producto.id,
-        nombre=producto.nombre,
-        categoria=producto.categoria,
-        precio_costo=producto.precio_costo,
-        precio_venta=producto.precio_venta,
-        proveedor=producto.proveedor,
-        fecha_lanzamiento=producto.fecha_lanzamiento
-    )
-    db.add(db_producto)
-    db.commit()
-    db.refresh(db_producto)
-    db.close()
-    return db_producto
+# Endpoint para crear un nuevo empleado (opcional)
+@app.post("/empleados/", response_model=EmpleadoSchema)
+def create_empleado(empleado: EmpleadoSchema):
+    # En este ejemplo, simplemente lo añadimos a la lista en memoria
+    empleados_data.append(empleado)
+    return empleado
 # 
